@@ -195,11 +195,15 @@ class InstagramLocation(Location):
 class InstagramComment(Comment):
     def __init__(self, raw_data) -> None:
         super().__init__()
-        self._id = raw_data["pk"]
-        self._user = InstagramUser(raw_data["user"])
-        self._text = raw_data["text"]
-        self._created_at = datetime.fromtimestamp(raw_data["created_at"])
-        self._has_liked_comment = get_or(raw_data, "has_liked_comment", False)
+        try:
+            self._id = raw_data["pk"]
+            self._user = InstagramUser(raw_data["user"])
+            self._text = raw_data["text"]
+            self._created_at = datetime.fromtimestamp(raw_data["created_at"])
+            self._has_liked_comment = get_or(raw_data, "has_liked_comment", False)
+        except Exception as ex:
+            log.warning("Unable to parse InstagramComment: {}. Data: {}"
+                        .format(ex, raw_data))
 
     @property
     def id(self):
