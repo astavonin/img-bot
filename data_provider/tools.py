@@ -12,3 +12,4 @@ def get_or(data, key, default=None):
         return default
     else:
         return data[key] if key in data else default
+

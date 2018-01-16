@@ -10,6 +10,7 @@ import urllib.parse
 from requests.cookies import cookiejar_from_dict
 from requests.utils import dict_from_cookiejar
 
+from data_provider.engine import Engine
 from data_provider.types import Media, User, Comment
 from data_provider.tools import get_or
 
@@ -72,7 +73,7 @@ def to_comment_id(comment):
     return comment_id
 
 
-class Engine(object):
+class InstagramEngine(Engine):
     def __init__(self):
         self._logged_in = False
         self._session = requests.Session()

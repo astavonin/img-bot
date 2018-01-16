@@ -1,7 +1,7 @@
 import logging
 from getpass import getpass
 
-from data_provider.instagram import API
+from data_provider import get_engine, EngineType
 
 
 def main():
@@ -16,46 +16,46 @@ def main():
         pass
 
     try:
-        api = API()
+        engine = get_engine(EngineType.INSTAGRAM)
         if not session:
             uname = input("user name: ")
             password = getpass("password: ")
-            api.login(uname, password)
+            engine.login(uname, password)
         else:
-            api.restore(session)
+            engine.restore(session)
 
-        # feed = api.get_timeline_feed()
-        # print(api.add_like(feed[0]))
+        # feed = engine.get_timeline_feed()
+        # print(engine.add_like(feed[0]))
         # print(feed)
-        # feed = api.get_hashtag_feed("model", 2)
+        # feed = engine.get_hashtag_feed("model", 2)
         # print("len={}, {}".format(len(feed), feed))
-        # uinfo = api.get_user_info(227793768)
+        # uinfo = engine.get_user_info(227793768)
 
-        # print(api.add_comment(1664462516250872860, "test"))
-        # print(api.delete_comment(1664462516250872860, 17891955247144228))
+        # print(engine.add_comment(1664462516250872860, "test"))
+        # print(engine.delete_comment(1664462516250872860, 17891955247144228))
 
-        # print(api.add_like(17891955247144228))
-        feed = api.get_user_feed()
+        # print(engine.add_like(17891955247144228))
+        feed = engine.get_user_feed()
         print(f"Own feed: {feed}")
         for media in feed:
             if media.comments_count and media.comments_count > 0:
-                comments = api.get_media_comments(media, 2)
+                comments = engine.get_media_comments(media, 2)
                 print(f"Comments on {media.id} {comments}")
             for tagged in media.user_tags:
-                uinfo = api.get_user_info(tagged)
+                uinfo = engine.get_user_info(tagged)
                 print(f"tagged user {uinfo}")
-                feed = api.get_user_feed(tagged, 2)
+                feed = engine.get_user_feed(tagged, 2)
                 print(f"tagged user feed {feed}")
         # print("len={}, {}".format(len(feed), feed))
-        # uinfo = api.get_user_info()
+        # uinfo = engine.get_user_info()
         # print(uinfo)
-        # followers = api.get_user_followers(pages=2)
+        # followers = engine.get_user_followers(pages=2)
         # print(followers)
 
-        # likers = api.get_media_likers()
+        # likers = engine.get_media_likers()
 
         with open(session_file, "w") as f:
-            f.write(str(api.save()))
+            f.write(str(engine.save()))
 
     except RuntimeError as ex:
         print("Error: {}".format(ex))
