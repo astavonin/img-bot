@@ -8,7 +8,3 @@ class InternalHttpError(RuntimeError):
 
 class InvalidCredentials(RuntimeError):
     pass
-
-
-class UnableToParse(RuntimeError):
-    pass
