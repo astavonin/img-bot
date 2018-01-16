@@ -72,7 +72,7 @@ def to_comment_id(comment):
     return comment_id
 
 
-class API(object):
+class Engine(object):
     def __init__(self):
         self._logged_in = False
         self._session = requests.Session()
@@ -140,8 +140,7 @@ class API(object):
                 'password': password,
                 'login_attempt_count': '0'}
 
-        resp, data = self._send_request('accounts/login/',
-                                        generate_signature(json.dumps(data)))
+        resp, data = self._send_request('accounts/login/', data)
         self._user_id = data["logged_in_user"]["pk"]
         self._rank_token = "%s_%s" % (self._user_id, self._uuid)
         self._token = resp.cookies["csrftoken"]
