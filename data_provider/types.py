@@ -71,7 +71,7 @@ class User(ABC):
                "external_url={}, " \
                "profile_url={}, " \
                "has_chaining={}" \
-               ")".format(self.id, shorten_string(self.user_name),
+               ")".format(self.id, self.user_name,
                           shorten_string(self.full_name), self.is_private,
                           self.is_business, self.media_count,
                           self.follower_count, self.following_count,

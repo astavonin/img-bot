@@ -177,7 +177,6 @@ class InstagramEngine(Engine):
         else:  # GET
             response = self._session.get(
                 config.API_URL + endpoint)
-
         if response.status_code == 200:
             return response, json.loads(response.text)
         if response.status_code == 429:
@@ -341,3 +340,7 @@ class InstagramEngine(Engine):
 
         self._send_request(f"friendships/destroy/{user_id}/",
                                   {'user_id': user_id})
+
+    @property
+    def page_len(self) -> int:
+        return 18

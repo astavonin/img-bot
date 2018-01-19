@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Dict, List
 
 from . import types
@@ -68,4 +68,9 @@ class Engine(ABC):
         raise NotImplementedError()
 
     def get_user_info(self, user=None) -> types.User:
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def page_len(self) -> int:
         raise NotImplementedError()
