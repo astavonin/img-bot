@@ -4,7 +4,7 @@ from datetime import timedelta
 from getpass import getpass
 from typing import List
 
-from bot import Task, Bot
+from bot import MediaTask, Bot
 from data_provider import get_engine, EngineType, User
 from persistence import UsersStorage, PersistReason
 from strategy.media_sourcies import HashtagMediaSource
@@ -78,7 +78,7 @@ def main():
 
         bot = Bot(engine, us)
 
-        task = Task()
+        task = MediaTask()
         media_source = HashtagMediaSource(["model", "portrait"], engine)
         task.add_media_source(media_source)
         liker = UserLiker(debug=True)

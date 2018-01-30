@@ -1,8 +1,6 @@
 import logging
 from typing import List, Set
 
-import math
-
 from data_provider import Media, Engine
 from strategy import MediaSource
 
@@ -24,8 +22,8 @@ class HashtagMediaSource(MediaSource):
 
     def __repr__(self) -> str:
         return "HashtagMediaSource(" \
-               "hashtags={}" \
-               ")".format(self._hashtags, super().__repr__())
+               "hashtags={}, " \
+               "{})".format(self._hashtags, super().__repr__())
 
 
 class TimelineMediaSource(MediaSource):

@@ -1,2 +1,2 @@
 from .bot import Bot
-from .task import Task
+from .media_task import MediaTask

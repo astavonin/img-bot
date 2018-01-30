@@ -1,12 +1,12 @@
 import logging
 import threading
-from datetime import timedelta, datetime
+from datetime import timedelta
 from time import sleep
 from typing import List
 
+from data_provider import Engine
 from persistence import UsersStorage
 from .task import Task
-from data_provider import Engine
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +51,8 @@ class Bot:
                         job.start()
                     except Exception as ex:
                         log.error(f"Error: {ex}")
-                log.info("Will sleep for {} before next task".format(timedelta(seconds=sleep_time)))
+                log.info("{} tasks were executed. Will sleep for {} before next run"
+                         .format(len(tasks), timedelta(seconds=sleep_time)))
                 sleep(sleep_time)
 
     def __repr__(self) -> str:
