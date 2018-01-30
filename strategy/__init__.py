@@ -1,1 +1,1 @@
-from .strategy import MediaSource, Liker, Commenter
+from .strategy import MediaSource, Strategy

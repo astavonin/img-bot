@@ -4,6 +4,15 @@ from .tools import shorten_string
 
 
 class User(ABC):
+
+    def __hash__(self) -> int:
+        # `id` is the only field which makes Media different.
+        return self.id
+
+    def __eq__(self, o: object) -> bool:
+        return (isinstance(o, self.__class__) and
+                getattr(o, 'id', None) == self.id)
+
     @property
     @abstractmethod
     def id(self):
@@ -59,10 +68,22 @@ class User(ABC):
     def has_chaining(self):
         raise NotImplemented()
 
+    @property
+    @abstractmethod
+    def biography(self):
+        raise NotImplemented()
+
+    @property
+    @abstractmethod
+    def category(self):
+        raise NotImplemented()
+
     def __repr__(self) -> str:
         return "User(id={}, " \
                "user_name={}, " \
                "full_name={}, " \
+               "category={}" \
+               "biography={}" \
                "is_private={}, " \
                "is_business={}, " \
                "media_count={}, " \
@@ -71,8 +92,9 @@ class User(ABC):
                "external_url={}, " \
                "profile_url={}, " \
                "has_chaining={}" \
-               ")".format(self.id, self.user_name,
-                          shorten_string(self.full_name), self.is_private,
+               ")".format(self.id, self.user_name, shorten_string(self.full_name),
+                          self.category,
+                          shorten_string(self.biography), self.is_private,
                           self.is_business, self.media_count,
                           self.follower_count, self.following_count,
                           self.external_url, self.profile_url, self.has_chaining
@@ -80,6 +102,15 @@ class User(ABC):
 
 
 class Media(ABC):
+
+    def __hash__(self) -> int:
+        # `id` is the only field which makes Media different.
+        return self.id
+
+    def __eq__(self, o: object) -> bool:
+        return (isinstance(o, self.__class__) and
+                getattr(o, 'id', None) == self.id)
+
     @property
     @abstractmethod
     def id(self):
@@ -157,6 +188,15 @@ class Media(ABC):
 
 
 class Location(ABC):
+
+    def __hash__(self) -> int:
+        # `id` is the only field which makes Media different.
+        return self.id
+
+    def __eq__(self, o: object) -> bool:
+        return (isinstance(o, self.__class__) and
+                getattr(o, 'id', None) == self.id)
+
     @property
     @abstractmethod
     def id(self):
@@ -201,6 +241,15 @@ class Location(ABC):
 
 
 class Comment(ABC):
+
+    def __hash__(self) -> int:
+        # `id` is the only field which makes Media different.
+        return self.id
+
+    def __eq__(self, o: object) -> bool:
+        return (isinstance(o, self.__class__) and
+                getattr(o, 'id', None) == self.id)
+
     @property
     @abstractmethod
     def id(self):

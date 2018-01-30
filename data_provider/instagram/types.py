@@ -96,6 +96,7 @@ class InstagramUser(User):
             self._id = raw_data["pk"]
             self._user_name = raw_data["username"]
             self._full_name = get_or(raw_data, "full_name", "")
+            self._biography = get_or(raw_data, "biography", "")
             self._is_private = get_or(raw_data, "is_private", False)
             self._is_business = get_or(raw_data, "is_business", False)
             self._media_count = get_or(raw_data, "media_count", 0)
@@ -104,6 +105,7 @@ class InstagramUser(User):
             self._external_url = get_or(raw_data, "external_url", "")
             self._profile_url = "{}/{}".format(USER_URL, self._user_name)
             self._has_chaining = get_or(raw_data, "has_chaining", False)
+            self._category = get_or(raw_data, "category", "")
         except Exception as ex:
             log.warning("Unable to parse InstagramUser: {}. Data: {}"
                         .format(ex, raw_data))
@@ -151,6 +153,14 @@ class InstagramUser(User):
     @property
     def profile_url(self):
         return self._profile_url
+
+    @property
+    def biography(self):
+        return self._biography
+
+    @property
+    def category(self):
+        return self._category
 
 
 class InstagramLocation(Location):

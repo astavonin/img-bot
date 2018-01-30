@@ -122,3 +122,4 @@ session.dat
 # temporary and project files
 .DS_Store
 .idea
+bw_lists.dat

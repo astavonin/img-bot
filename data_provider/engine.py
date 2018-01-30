@@ -70,7 +70,5 @@ class Engine(ABC):
     def get_user_info(self, user=None) -> types.User:
         raise NotImplementedError()
 
-    @property
-    @abstractmethod
-    def page_len(self) -> int:
+    def get_own_id(self):
         raise NotImplementedError()

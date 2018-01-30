@@ -310,7 +310,7 @@ class InstagramEngine(Engine):
         log.info(f"add_like for media_id={media_id}")
 
         self._send_request(f"media/{media_id}/like/",
-                                  {'media_id': media_id})
+                           {'media_id': media_id})
 
     def delete_like(self, media):
         media_id = to_media_id(media)
@@ -332,15 +332,14 @@ class InstagramEngine(Engine):
         log.info("follow for user_id={user_id}")
 
         self._send_request(f"friendships/create/{user_id}/",
-                                  {'user_id': user_id})
+                           {'user_id': user_id})
 
     def unfollow(self, user):
         user_id = to_user_id(user)
         log.info("unfollow for user_id={user_id}")
 
         self._send_request(f"friendships/destroy/{user_id}/",
-                                  {'user_id': user_id})
+                           {'user_id': user_id})
 
-    @property
-    def page_len(self) -> int:
-        return 18
+    def get_own_id(self):
+        return self._user_id
