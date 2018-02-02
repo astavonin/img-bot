@@ -4,11 +4,10 @@ from datetime import timedelta
 from getpass import getpass
 from typing import List
 
-from bot import MediaTask, Bot
+from bot import MediaTask, Bot, CommonTask
 from data_provider import get_engine, EngineType, User
 from persistence import UsersStorage, PersistReason
-from strategy.media_sourcies import HashtagMediaSource
-from strategy.user_strategies import UserLiker
+from strategy import HashtagMediaSource, UserLiker, StatCollector, BlackListUpdater
 
 
 def is_in_string(data: str, words: List[str]):
@@ -78,14 +77,21 @@ def main():
 
         bot = Bot(engine, us)
 
-        task = MediaTask()
+        media_like = MediaTask()
         media_source = HashtagMediaSource(["model", "portrait"], engine)
-        task.add_media_source(media_source)
+        media_like.add_media_source(media_source)
         liker = UserLiker(debug=True)
         liker.set_user_filter(user_filter)
-        task.add_strategy(liker)
+        media_like.add_strategy(liker)
+        bot.add_task(media_like, timedelta(hours=4))
 
-        bot.add_task(task, timedelta(hours=4))
+        stat_collect = CommonTask()
+        stat_collect.add_strategy(StatCollector("stat.txt"))
+        bot.add_task(stat_collect, timedelta(hours=1))
+
+        stat_collect = CommonTask()
+        stat_collect.add_strategy(BlackListUpdater())
+        bot.add_task(stat_collect, timedelta(hours=3))
 
         bot.run()
 

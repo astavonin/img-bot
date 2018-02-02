@@ -43,9 +43,6 @@ class Strategy(ABC):
         self._persistence = persistence
         self._own_id = data_provider.get_own_id()
 
-    def process_media(self, medias: List[Media]) -> None:
-        raise NotImplementedError()
-
     def set_media_filter(self, media_filter: Callable[[Media], bool]):
         self._media_filter = media_filter
 
