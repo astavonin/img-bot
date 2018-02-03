@@ -27,6 +27,7 @@ class PersistedUser:
     def __init__(self, user_id, reason) -> None:
         self.user_id = user_id
         self.reason = reason
+        self.date_added = datetime.now()
 
     def __hash__(self) -> int:
         return hash(self.__key())
