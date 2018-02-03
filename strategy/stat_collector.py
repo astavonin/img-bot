@@ -7,6 +7,12 @@ from strategy import Strategy
 
 class StatCollector(Strategy):
 
+    def __repr__(self) -> str:
+        return "StatCollector({}, " \
+               "out_file={}" \
+               ")".format(super().__repr__(),
+                          self._out_file)
+
     def __init__(self, out_file: str, data_provider: Engine = None, persistence: UsersStorage = None,
                  call_delay=1.0, debug=False) -> None:
         super().__init__(data_provider, persistence, call_delay, debug)

@@ -34,5 +34,5 @@ class Task(ABC):
         return f"Task(" \
                f"engine={self._engine}, " \
                f"user_storage={self._user_storage}" \
-               "strategies={self._strategies}" \
+               f"strategies={self._strategies}" \
                f")"

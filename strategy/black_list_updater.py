@@ -10,6 +10,9 @@ log = logging.getLogger(__name__)
 
 class BlackListUpdater(Strategy):
 
+    def __repr__(self) -> str:
+        return "BlackListUpdater({})".format(super().__repr__())
+
     def __init__(self, data_provider: Engine = None, persistence: UsersStorage = None, call_delay=1.0,
                  debug=False) -> None:
         super().__init__(data_provider, persistence, call_delay, debug)

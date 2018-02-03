@@ -47,6 +47,7 @@ class Bot:
             for sleep_time, tasks in gen_delay(self._tasks):
                 for task in tasks:
                     try:
+                        log.info(f"Executing task {task}")
                         job = threading.Thread(target=task.run)
                         job.start()
                     except Exception as ex:
