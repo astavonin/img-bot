@@ -18,10 +18,15 @@ def is_in_string(data: str, words: List[str]):
     return False
 
 
-def user_filter(user: User, us: UsersStorage) -> bool:
-    white_list = ["model", "actor", "modelling", "photomodel"]
+def load_list(fname) -> List[str]:
+    with open(fname) as f:
+        content = f.readlines()
+    return [x.strip() for x in content]
 
-    black_list = ["store", "shop", "discounts", "free", "dealership", "brand"]
+
+def user_filter(user: User, us: UsersStorage) -> bool:
+    white_list = load_list("white_list.txt")
+    black_list = load_list("black_list.txt")
 
     texts = user.biography + user.user_name + user.category
 
@@ -49,12 +54,6 @@ def user_filter(user: User, us: UsersStorage) -> bool:
         return False
 
     return True
-
-
-def load_list(fname) -> List[str]:
-    with open(fname) as f:
-        content = f.readlines()
-    return [x.strip() for x in content]
 
 
 def main():
