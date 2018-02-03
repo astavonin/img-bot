@@ -20,8 +20,8 @@ def is_in_string(data: str, words: List[str]):
 
 def load_list(fname) -> List[str]:
     with open(fname) as f:
-        content = f.readlines()
-    return [x.strip() for x in content]
+        content = f.read().splitlines()
+    return [x for x in content if x is not ""]
 
 
 def user_filter(user: User, us: UsersStorage) -> bool:
