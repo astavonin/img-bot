@@ -1,5 +1,6 @@
 import logging
 import shelve
+import threading
 from datetime import datetime
 from enum import Enum
 from typing import List
@@ -48,17 +49,20 @@ class UserInteraction:
 class UsersStorage:
 
     def _load_from_storage(self, name, def_container):
-        with shelve.open(self._storage_path) as db:
-            if name in db:
-                return db[name]
-            return def_container
+        with self._lock:
+            with shelve.open(self._storage_path) as db:
+                if name in db:
+                    return db[name]
+                return def_container
 
     def _store_to_storage(self, name, data) -> None:
-        with shelve.open(self._storage_path) as db:
-            db[name] = data
+        with self._lock:
+            with shelve.open(self._storage_path) as db:
+                db[name] = data
 
     def __init__(self, storage_path) -> None:
         self._storage_path = storage_path
+        self._lock = threading.Lock()
         self._blacklist = self._load_from_storage("black_list", set())
         self._whitelist = self._load_from_storage("white_list", set())
         self._interactions = self._load_from_storage("interactions", {})
