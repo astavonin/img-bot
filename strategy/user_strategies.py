@@ -54,7 +54,6 @@ class UserLiker(Strategy):
                 sleep(self._call_delay)
 
                 if users_to_like <= 0:
-                    log.warning("All users was liked!")
                     break
                 if self._persistence.in_blacklist(user):
                     log.info(f"User already is in black list: {user}")
@@ -69,9 +68,11 @@ class UserLiker(Strategy):
                 if self._user_filter(full_user, self._persistence):
                     self._like_user(user)
                     users_to_like -= 1
+                self._persistence.register_like(user)
             except TooManyRequests:
                 log.warning(f"Too many requests, sleeping for {error_delay}s")
                 sleep(error_delay)
                 error_delay *= 2
                 self._call_delay *= 2
+        self._persistence.store_data()
         log.info("{} user was liked".format(int(self._total_likes / self._likes_per_user) - users_to_like))

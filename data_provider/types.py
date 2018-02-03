@@ -3,6 +3,37 @@ from abc import ABC, abstractmethod
 from .tools import shorten_string
 
 
+
+def to_user_id(user):
+    if isinstance(user, int):
+        return user
+    elif isinstance(user, User):
+        user_id = user.id
+    else:
+        user_id = int(user)
+    return user_id
+
+
+def to_media_id(media):
+    if isinstance(media, int):
+        return media
+    elif isinstance(media, Media):
+        media_id = media.id
+    else:
+        media_id = int(media)
+    return media_id
+
+
+def to_comment_id(comment):
+    if isinstance(comment, int):
+        return comment
+    elif isinstance(comment, Comment):
+        comment_id = comment.id
+    else:
+        comment_id = int(comment)
+    return comment_id
+
+
 class User(ABC):
 
     def __hash__(self) -> int:

@@ -51,6 +51,12 @@ def user_filter(user: User, us: UsersStorage) -> bool:
     return True
 
 
+def load_list(fname) -> List[str]:
+    with open(fname) as f:
+        content = f.readlines()
+    return [x.strip() for x in content]
+
+
 def main():
 
     logging.basicConfig(level=logging.INFO)
@@ -73,14 +79,15 @@ def main():
                 f.write(str(engine.save()))
         else:
             engine.restore(session)
-        us = UsersStorage("bw_lists.dat")
+        us = UsersStorage("db")
 
         bot = Bot(engine, us)
 
         media_like = MediaTask()
-        media_source = HashtagMediaSource(["model", "portrait"], engine)
+        hashtags = load_list("hashtags.txt")
+        media_source = HashtagMediaSource(hashtags)
         media_like.add_media_source(media_source)
-        liker = UserLiker(debug=True)
+        liker = UserLiker(total_likes=150, debug=True)
         liker.set_user_filter(user_filter)
         media_like.add_strategy(liker)
         bot.add_task(media_like, timedelta(hours=4))

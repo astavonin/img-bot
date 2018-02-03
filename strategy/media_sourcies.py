@@ -1,4 +1,5 @@
 import logging
+import random
 from typing import List, Set
 
 from data_provider import Media, Engine
@@ -9,14 +10,19 @@ log = logging.getLogger(__name__)
 
 class HashtagMediaSource(MediaSource):
 
-    def __init__(self, hashtags: List[str], data_provider: Engine = None):
+    def __init__(self, hashtags: List[str], random_tag=True, data_provider: Engine = None):
         super().__init__(data_provider)
         self._hashtags = hashtags
+        self._random_tag = random_tag
 
     def get_media(self, pages: int = 1) -> List[Media]:
         medias = []
-        for hashtag in self._hashtags:
-            log.info(f"Loading medias for hashtag {hashtag}, {pages} page requested")
+        if self._random_tag:
+            hashtags = [random.choice(self._hashtags)]
+        else:
+            hashtags = self._hashtags
+        for hashtag in hashtags:
+            log.info(f"Loading medias for hashtag `{hashtag}`, {pages} page requested")
             medias.extend(self._data_provider.get_hashtag_feed(hashtag, pages))
         return medias
 

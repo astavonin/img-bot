@@ -1,22 +1,20 @@
-import requests
-import json
 import hashlib
 import hmac
-import urllib
-import uuid
+import json
 import logging
+import urllib
 import urllib.parse
+import uuid
 
+import requests
 from requests.cookies import cookiejar_from_dict
 from requests.utils import dict_from_cookiejar
 
-from data_provider.engine import Engine
-from data_provider.types import Media, User, Comment
-from data_provider.tools import get_or
-
-from . import types, config
-
 from data_provider import errors
+from data_provider.engine import Engine
+from data_provider.tools import get_or
+from data_provider.types import to_media_id, to_comment_id, to_user_id
+from . import types, config
 
 log = logging.getLogger(__name__)
 
@@ -41,36 +39,6 @@ def generate_signature(data):
     return 'ig_sig_key_version=' + config.SIG_KEY_VERSION + '&signed_body=' + \
            hmac.new(config.IG_SIG_KEY.encode('utf-8'), data.encode('utf-8'),
                     hashlib.sha256).hexdigest() + '.' + parsed_data
-
-
-def to_user_id(user):
-    if isinstance(user, int):
-        return user
-    elif isinstance(user, User):
-        user_id = user.id
-    else:
-        user_id = int(user)
-    return user_id
-
-
-def to_media_id(media):
-    if isinstance(media, int):
-        return media
-    elif isinstance(media, Media):
-        media_id = media.id
-    else:
-        media_id = int(media)
-    return media_id
-
-
-def to_comment_id(comment):
-    if isinstance(comment, int):
-        return comment
-    elif isinstance(comment, Comment):
-        comment_id = comment.id
-    else:
-        comment_id = int(comment)
-    return comment_id
 
 
 class InstagramEngine(Engine):
@@ -102,7 +70,7 @@ class InstagramEngine(Engine):
                 "rank_token" in session and "token" in session and
                 "uuid" in session and "phone_id" in session):
             raise RuntimeError("Cannot restore session")
-        log.info("Restoring instagram session")
+        log.info("Restoring Instagram session")
 
         self._device_id = session["device_id"]
         self._user_id = session["user_id"]
@@ -152,7 +120,7 @@ class InstagramEngine(Engine):
     def logout(self):
         if not self._logged_in:
             return
-        log.info("Logout from instagram")
+        log.info("Logout from Instagram")
         self._logged_in = not self._send_request('accounts/logout/')
 
     def _send_request(self, endpoint, post=None):
@@ -189,7 +157,7 @@ class InstagramEngine(Engine):
                                            format(response.status_code))
 
     def get_timeline_feed(self, pages=1):
-        log.info(f"get_timeline_feed pages={pages}")
+        log.debug(f"get_timeline_feed pages={pages}")
 
         url = f'feed/timeline/?rank_token={self._rank_token}' \
               f'&ranked_content=true'
@@ -205,7 +173,7 @@ class InstagramEngine(Engine):
     def get_media(self, media):
         media_id = to_media_id(media)
 
-        log.info(f"get_media for media_id={media_id}")
+        log.debug(f"get_media for media_id={media_id}")
 
         _, raw = self._send_request(f"media/{media_id}/info/")
 
@@ -213,7 +181,7 @@ class InstagramEngine(Engine):
 
     def add_comment(self, media, text):
         media_id = to_media_id(media)
-        log.info(f"add_comment to media_id{media_id} with text '{text}'")
+        log.debug(f"add_comment to media_id{media_id} with text '{text}'")
 
         _, raw = self._send_request(f"media/{media_id}/comment/",
                                     {'comment_text': text})
@@ -223,7 +191,7 @@ class InstagramEngine(Engine):
     def delete_comment(self, media, comment):
         media_id = to_media_id(media)
         comment_id = to_comment_id(comment)
-        log.info(f"delete_comment with media_id={media_id} and "
+        log.debug(f"delete_comment with media_id={media_id} and "
                  f"comment_id={comment_id}")
 
         self._send_request(f"media/{media_id}/comment/{comment_id}/delete/", {})
@@ -233,7 +201,7 @@ class InstagramEngine(Engine):
             user_id = self._user_id
         else:
             user_id = to_user_id(user)
-        log.info(f"get_user_info for user_id={user_id}")
+        log.debug(f"get_user_info for user_id={user_id}")
 
         _, raw = self._send_request(f'users/{user_id}/info/')
 
@@ -241,7 +209,7 @@ class InstagramEngine(Engine):
 
     def get_media_likers(self, media):
         media_id = to_media_id(media)
-        log.info(f"get_media_likers for media_id={media_id}")
+        log.debug(f"get_media_likers for media_id={media_id}")
 
         likers = self._send_request('media/{media_id}/likers/?')
         return [types.InstagramUser(liker) for liker in likers]
@@ -261,7 +229,7 @@ class InstagramEngine(Engine):
             user_id = self._user_id
         else:
             user_id = to_user_id(user)
-        log.info(
+        log.debug(
             f"get_user_feed for user_id=`{user_id}`, pages={pages}, "
             f"min_timestamp={min_timestamp}")
 
@@ -272,7 +240,7 @@ class InstagramEngine(Engine):
         return [types.InstagramMedia(item) for item in items]
 
     def get_hashtag_feed(self, hashtag, pages=1):
-        log.info(f"get_hashtag_feed for hashtag=`{hashtag}`, "
+        log.debug(f"get_hashtag_feed for hashtag=`{hashtag}`, "
                  f"pages=`{pages}`")
 
         url = f'feed/tag/{hashtag}/?rank_token={self._rank_token}' \
@@ -286,7 +254,7 @@ class InstagramEngine(Engine):
             user_id = self._user_id
         else:
             user_id = to_user_id(user)
-        log.info(f"get_user_followers for user_id={user_id}, pages={pages}")
+        log.debug(f"get_user_followers for user_id={user_id}, pages={pages}")
 
         url = f"friendships/{user_id}/followers/?rank_token={self._rank_token}"
         medias = self._load_items(url, pages, "users")
@@ -298,7 +266,7 @@ class InstagramEngine(Engine):
             user_id = self._user_id
         else:
             user_id = to_user_id(user)
-        log.info(f"get_user_followings for user_id={user_id}, pages={pages}")
+        log.debug(f"get_user_followings for user_id={user_id}, pages={pages}")
 
         url = f"friendships/{user_id}/following/?rank_token={self._rank_token}"
         medias = self._load_items(url, pages, "users")
@@ -307,20 +275,20 @@ class InstagramEngine(Engine):
 
     def add_like(self, media):
         media_id = to_media_id(media)
-        log.info(f"add_like for media_id={media_id}")
+        log.debug(f"add_like for media_id={media_id}")
 
         self._send_request(f"media/{media_id}/like/",
                            {'media_id': media_id})
 
     def delete_like(self, media):
         media_id = to_media_id(media)
-        log.info(f"delete_like for media_id={media_id}")
+        log.debug(f"delete_like for media_id={media_id}")
 
         print(self._send_request(f"media/{media_id}/unlike/", {}))
 
     def get_media_comments(self, media, pages=1):
         media_id = to_media_id(media)
-        log.info(f"get_media_comments for media_id={media_id}, pages={pages}")
+        log.debug(f"get_media_comments for media_id={media_id}, pages={pages}")
 
         url = f"media/{media_id}/comments/?"
         comments = self._load_items(url, pages, "comments")
@@ -329,14 +297,14 @@ class InstagramEngine(Engine):
 
     def follow(self, user):
         user_id = to_user_id(user)
-        log.info("follow for user_id={user_id}")
+        log.debug("follow for user_id={user_id}")
 
         self._send_request(f"friendships/create/{user_id}/",
                            {'user_id': user_id})
 
     def unfollow(self, user):
         user_id = to_user_id(user)
-        log.info("unfollow for user_id={user_id}")
+        log.debug("unfollow for user_id={user_id}")
 
         self._send_request(f"friendships/destroy/{user_id}/",
                            {'user_id': user_id})
