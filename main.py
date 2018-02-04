@@ -57,8 +57,8 @@ def user_filter(user: User, us: UsersStorage) -> bool:
 
 
 def main():
-
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO,
+                        datefmt='%Y/%m/%d %I:%M:%S')
 
     session = None
     session_file = "session.dat"
