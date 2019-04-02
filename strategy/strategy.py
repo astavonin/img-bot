@@ -2,7 +2,6 @@ from abc import ABC
 from typing import List, Callable
 
 from data_provider import Media, Engine, User
-from persistence import UsersStorage
 
 
 class MediaSource(ABC):
@@ -24,10 +23,9 @@ class MediaSource(ABC):
 
 class Strategy(ABC):
 
-    def __init__(self, data_provider: Engine = None, persistence: UsersStorage = None,
+    def __init__(self, data_provider: Engine = None,
                  call_delay=1.0, debug=False) -> None:
         self._data_provider = data_provider
-        self._persistence = persistence
         self._media_filter = None
         self._user_filter = None
         self._call_delay = call_delay
@@ -38,15 +36,14 @@ class Strategy(ABC):
             self._own_id = -1
         self._debug = debug
 
-    def init(self, data_provider: Engine, persistence: UsersStorage) -> None:
+    def init(self, data_provider: Engine) -> None:
         self._data_provider = data_provider
-        self._persistence = persistence
         self._own_id = data_provider.get_own_id()
 
     def set_media_filter(self, media_filter: Callable[[Media], bool]):
         self._media_filter = media_filter
 
-    def set_user_filter(self, user_filter: Callable[[User, UsersStorage], bool]):
+    def set_user_filter(self, user_filter: Callable[[User], bool]):
         self._user_filter = user_filter
 
     def __repr__(self) -> str:
@@ -55,7 +52,6 @@ class Strategy(ABC):
                f"own_id={self._own_id}, " \
                f"call_delay={self._call_delay}, " \
                f"data_provider={self._data_provider}, " \
-               f"persistence={self._persistence}, " \
                f"media_filters={self._media_filter}, " \
                f"user_filters={self._user_filter}" \
                f")"

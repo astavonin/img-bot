@@ -4,7 +4,6 @@ from typing import List
 
 from data_provider import Media, Engine, User
 from data_provider.errors import TooManyRequests
-from persistence import UsersStorage
 from strategy import Strategy
 
 log = logging.getLogger(__name__)
@@ -19,8 +18,8 @@ class UserLiker(Strategy):
                           self._likes_per_user)
 
     def __init__(self, likes_per_user=5, total_likes=100, data_provider: Engine = None,
-                 persistence: UsersStorage = None, call_delay=1.0, debug=False) -> None:
-        super().__init__(data_provider, persistence, call_delay, debug)
+                  call_delay=1.0, debug=False) -> None:
+        super().__init__(data_provider, call_delay, debug)
         self._likes_per_user = likes_per_user
         self._total_likes = total_likes
 
@@ -55,24 +54,15 @@ class UserLiker(Strategy):
 
                 if users_to_like <= 0:
                     break
-                if self._persistence.in_blacklist(user):
-                    log.info(f"User already is in black list: {user}")
-                    continue
-                if self._persistence.in_whitelist(user):
-                    self._like_user(user)
-                    users_to_like -= 1
-                    continue
 
                 full_user = self._data_provider.get_user_info(user)
 
-                if self._user_filter(full_user, self._persistence):
+                if self._user_filter(full_user):
                     self._like_user(user)
                     users_to_like -= 1
-                self._persistence.register_like(user)
             except TooManyRequests:
                 log.warning(f"Too many requests, sleeping for {error_delay}s")
                 sleep(error_delay)
                 error_delay *= 2
                 self._call_delay *= 2
-        self._persistence.store_data()
         log.info("{} user was liked".format(int(self._total_likes / self._likes_per_user) - users_to_like))

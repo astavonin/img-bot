@@ -1,7 +1,6 @@
 import logging
 
 from data_provider import Engine
-from persistence import UsersStorage
 from strategy import MediaSource
 from .task import Task
 
@@ -14,8 +13,8 @@ class MediaTask(Task):
         super().__init__()
         self._media_source = []
 
-    def init(self, engine: Engine, user_storage: UsersStorage) -> None:
-        super().init(engine, user_storage)
+    def init(self, engine: Engine) -> None:
+        super().init(engine)
 
         for medias in self._media_source:
             medias.init(self._engine)

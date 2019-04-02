@@ -1,4 +1,5 @@
 import logging
+import os
 import traceback
 from datetime import timedelta
 from getpass import getpass
@@ -6,8 +7,7 @@ from typing import List
 
 from bot import MediaTask, Bot, CommonTask
 from data_provider import get_engine, EngineType, User
-from persistence import UsersStorage, PersistReason
-from strategy import HashtagMediaSource, UserLiker, StatCollector, BlackListUpdater
+from strategy import HashtagMediaSource, UserLiker, StatCollector
 
 
 def is_in_string(data: str, words: List[str]):
@@ -24,33 +24,18 @@ def load_list(fname) -> List[str]:
     return [x for x in content if x is not ""]
 
 
-def user_filter(user: User, us: UsersStorage) -> bool:
-    white_list = load_list("white_list.txt")
-    black_list = load_list("black_list.txt")
-
-    texts = user.biography + user.user_name + user.category
-
-    if is_in_string(texts, black_list):
-        us.add_to_blacklist(user, PersistReason.STOP_WORD)
-        return False
-
-    if is_in_string(texts, white_list):
-        return True
-
+def user_filter(user: User) -> bool:
     if user.media_count < 9:
         return False
 
     if user.following_count > 1000:
-        us.add_to_blacklist(user, PersistReason.TOO_MANY_FOLLOWING)
         return False
 
     if user.follower_count > 2000:
-        us.add_to_blacklist(user, PersistReason.TOO_MANY_FOLLOWERS)
         return False
 
     if user.following_count > 0 and \
             user.follower_count / user.following_count > 20:
-        us.add_to_blacklist(user, PersistReason.BAD_FOLLOW_RATIO)
         return False
 
     return True
@@ -65,39 +50,34 @@ def main():
     try:
         with open(session_file, "r") as f:
             session = eval(f.read())
-    except FileNotFoundError:
+    except IOError:
         pass
 
     try:
         engine = get_engine(EngineType.INSTAGRAM)
         if not session:
-            uname = input("user name: ")
-            password = getpass("password: ")
+            uname = os.environ.get('IMG_BOT_USER_NAME')
+            password = os.environ.get('IMG_BOT_PASSWORD')
             engine.login(uname, password)
             with open(session_file, "w") as f:
                 f.write(str(engine.save()))
         else:
             engine.restore(session)
-        us = UsersStorage("db")
 
-        bot = Bot(engine, us)
+        bot = Bot(engine)
 
         media_like = MediaTask()
         hashtags = load_list("hashtags.txt")
         media_source = HashtagMediaSource(hashtags)
         media_like.add_media_source(media_source)
-        liker = UserLiker(total_likes=150, debug=True)
+        liker = UserLiker(total_likes=200, debug=True)
         liker.set_user_filter(user_filter)
         media_like.add_strategy(liker)
-        bot.add_task(media_like, timedelta(hours=4))
+        bot.add_task(media_like, timedelta(hours=2))
 
         stat_collect = CommonTask()
         stat_collect.add_strategy(StatCollector("stat.txt"))
         bot.add_task(stat_collect, timedelta(hours=1))
-
-        stat_collect = CommonTask()
-        stat_collect.add_strategy(BlackListUpdater())
-        bot.add_task(stat_collect, timedelta(hours=3))
 
         bot.run()
 

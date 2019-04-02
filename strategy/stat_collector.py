@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from data_provider import Engine
-from persistence import UsersStorage
 from strategy import Strategy
 
 
@@ -13,9 +12,9 @@ class StatCollector(Strategy):
                ")".format(super().__repr__(),
                           self._out_file)
 
-    def __init__(self, out_file: str, data_provider: Engine = None, persistence: UsersStorage = None,
+    def __init__(self, out_file: str, data_provider: Engine = None,
                  call_delay=1.0, debug=False) -> None:
-        super().__init__(data_provider, persistence, call_delay, debug)
+        super().__init__(data_provider, call_delay, debug)
 
         self._out_file = out_file
 

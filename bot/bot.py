@@ -5,7 +5,6 @@ from time import sleep
 from typing import List
 
 from data_provider import Engine
-from persistence import UsersStorage
 from .task import Task
 
 log = logging.getLogger(__name__)
@@ -32,14 +31,13 @@ def gen_delay(tasks: List[TaskExecution], max_delay=None) -> (float, List[Task])
 
 
 class Bot:
-    def __init__(self, engine: Engine, persistence: UsersStorage) -> None:
+    def __init__(self, engine: Engine) -> None:
         super().__init__()
         self._engine = engine
-        self._persistence = persistence
         self._tasks = []
 
     def add_task(self, task: Task, every: timedelta) -> None:
-        task.init(self._engine, self._persistence)
+        task.init(self._engine)
         self._tasks.append(TaskExecution(task, every.total_seconds()))
 
     def run(self) -> None:
@@ -59,6 +57,5 @@ class Bot:
     def __repr__(self) -> str:
         return f"Bot(" \
                f"engine={self._engine}, " \
-               f"persistence={self._persistence}, " \
                f"comment_srcs={self._tasks}, " \
                f")"
