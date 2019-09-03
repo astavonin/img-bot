@@ -7,7 +7,7 @@ variable "lambda_runtime" {
 }
 
 variable "lambda_memory" {
-  default = "512"
+  default = "256"
 }
 
 variable "lambda_timeout" {
@@ -27,5 +27,20 @@ variable "lambda_function_handler" {
 }
 
 variable "pip_path" {
-  default = "/usr/bin/pip3"
+  default = "~/.local/bin/pip3"
+}
+
+variable "user_name" {
+  type        = string
+  description = "Instagram account user name"
+}
+
+variable "password" {
+  type        = string
+  description = "Instagram account password"
+}
+
+variable "hashtags" {
+  type        = string
+  description = "Comma separated hashtags list"
 }

@@ -127,3 +127,12 @@ stat.txt
 hashtags.txt
 black_list.txt
 white_list.txt
+
+# terraform
+.terraform
+lambda.zip
+terraform/src
+*.tfstate
+*.tfstate.backup
+*.tfvars
+

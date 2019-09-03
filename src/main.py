@@ -57,8 +57,9 @@ def process():
             uname = os.environ.get('IMG_BOT_USER_NAME')
             password = os.environ.get('IMG_BOT_PASSWORD')
             engine.login(uname, password)
-            with open(session_file, "w") as f:
-                f.write(str(engine.save()))
+            if os.environ.get('IMG_BOT_PERSIST'):
+                with open(session_file, "w") as f:
+                    f.write(str(engine.save()))
         else:
             engine.restore(session)
 
