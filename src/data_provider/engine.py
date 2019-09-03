@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Dict, List
 
 from . import types
@@ -6,6 +6,9 @@ from . import types
 
 class Engine(ABC):
     # Session manipulations
+    def init(self) -> None:
+        raise NotImplementedError()
+
     def restore(self, session: Dict[str, str]) -> None:
         raise NotImplementedError()
 

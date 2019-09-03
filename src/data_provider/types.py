@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from .tools import shorten_string
 
 
-
 def to_user_id(user):
     if isinstance(user, int):
         return user

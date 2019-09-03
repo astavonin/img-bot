@@ -2,8 +2,8 @@ import logging
 import re
 from datetime import datetime
 
-from data_provider.types import Media, User, Location, Comment
-from data_provider.tools import get_or
+from data_provider import Media, User, Location, Comment
+from data_provider import get_or
 from .config import USER_URL
 
 log = logging.getLogger(__name__)

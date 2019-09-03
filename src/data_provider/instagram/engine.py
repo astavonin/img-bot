@@ -11,9 +11,9 @@ from requests.cookies import cookiejar_from_dict
 from requests.utils import dict_from_cookiejar
 
 from data_provider import errors
-from data_provider.engine import Engine
-from data_provider.tools import get_or
-from data_provider.types import to_media_id, to_comment_id, to_user_id
+from data_provider import Engine
+from data_provider import get_or
+from data_provider import to_media_id, to_comment_id, to_user_id
 from . import types, config
 
 log = logging.getLogger(__name__)
@@ -42,6 +42,9 @@ def generate_signature(data):
 
 
 class InstagramEngine(Engine):
+    def init(self) -> None:
+        pass
+
     def __init__(self):
         self._logged_in = False
         self._session = requests.Session()

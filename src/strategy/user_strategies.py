@@ -3,7 +3,7 @@ from time import sleep
 from typing import List
 
 from data_provider import Media, Engine, User
-from data_provider.errors import TooManyRequests
+from data_provider import TooManyRequests
 from strategy import Strategy
 
 log = logging.getLogger(__name__)

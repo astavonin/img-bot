@@ -1,13 +1,12 @@
+import json
 import logging
 import os
 import traceback
-from datetime import timedelta
-from getpass import getpass
 from typing import List
 
-from bot import MediaTask, Bot, CommonTask
+from bot import MediaTask, Bot
 from data_provider import get_engine, EngineType, User
-from strategy import HashtagMediaSource, UserLiker, StatCollector
+from strategy import HashtagMediaSource, UserLiker
 
 
 def is_in_string(data: str, words: List[str]):
@@ -18,10 +17,9 @@ def is_in_string(data: str, words: List[str]):
     return False
 
 
-def load_list(fname) -> List[str]:
-    with open(fname) as f:
-        content = f.read().splitlines()
-    return [x for x in content if x is not ""]
+def load_list(env_name) -> List[str]:
+    content = os.environ.get(env_name)
+    return content.split(",")
 
 
 def user_filter(user: User) -> bool:
@@ -41,7 +39,7 @@ def user_filter(user: User) -> bool:
     return True
 
 
-def main():
+def process():
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO,
                         datefmt='%Y/%m/%d %I:%M:%S')
 
@@ -67,23 +65,46 @@ def main():
         bot = Bot(engine)
 
         media_like = MediaTask()
-        hashtags = load_list("hashtags.txt")
+        hashtags = load_list("IMG_BOT_HASHTAGS")
         media_source = HashtagMediaSource(hashtags)
         media_like.add_media_source(media_source)
-        liker = UserLiker(total_likes=200, debug=True)
+        liker = UserLiker(total_likes=10, debug=True)
         liker.set_user_filter(user_filter)
         media_like.add_strategy(liker)
-        bot.add_task(media_like, timedelta(hours=2))
+        bot.add_task(media_like)
 
-        stat_collect = CommonTask()
-        stat_collect.add_strategy(StatCollector("stat.txt"))
-        bot.add_task(stat_collect, timedelta(hours=1))
+        # stat_collect = CommonTask()
+        # stat_collect.add_strategy(StatCollector("stat.txt"))
+        # bot.add_task(stat_collect)
 
         bot.run()
 
     except RuntimeError as ex:
         print("Error: {}".format(ex))
         traceback.print_tb(ex.__traceback__)
+
+
+def response(status=200, headers=None, body=''):
+    if not body:
+        return {'statusCode': status}
+
+    if headers is None:
+        headers = {'Content-Type': 'application/json'}
+
+    return {
+        'statusCode': status,
+        'headers': headers,
+        'body': json.dumps(body)
+    }
+
+
+def lambda_handler(event, context):
+    process()
+    return response(status=200, body=event['body'])
+
+
+def main():
+    process()
 
 
 if __name__ == '__main__':

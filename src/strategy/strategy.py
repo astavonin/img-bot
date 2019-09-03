@@ -54,4 +54,5 @@ class Strategy(ABC):
                f"data_provider={self._data_provider}, " \
                f"media_filters={self._media_filter}, " \
                f"user_filters={self._user_filter}" \
+               f"error_delay={self._error_delay}" \
                f")"
