@@ -2,11 +2,19 @@ provider "aws" {
   region = var.region
 }
 
+data "external" "trigger" {
+  program = [
+    "${path.module}/dirhash.sh"]
+
+  query {
+    directory = "${path.module}/../src"
+  }
+}
 
 resource "null_resource" "pip" {
   triggers = {
-    main         = "${base64sha256(file("../src/main.py"))}"
-    requirements = "${base64sha256(file("../requirements.txt"))}"
+    md5 = data.external.trigger.result["checksum"]
+    requirements = base64sha256(file("${path.module}/../requirements.txt"))
   }
 
   provisioner "local-exec" {
@@ -21,11 +29,12 @@ resource "null_resource" "pip" {
 }
 
 data "archive_file" "lambda_zip" {
-  type        = "zip"
-  source_dir  = "${path.root}/src"
+  type = "zip"
+  source_dir = "${path.root}/src"
   output_path = "${path.root}/lambda.zip"
 
-  depends_on = ["null_resource.pip"]
+  depends_on = [
+    "null_resource.pip"]
 }
 
 
@@ -42,7 +51,7 @@ resource "aws_iam_role_policy_attachment" "basic_exec_role" {
 }
 
 resource "aws_lambda_function" "img_bot_lambda" {
-  function_name    = var.lambda_name
+  function_name = var.lambda_name
   filename = var.lambda_payload_filename
 
   source_code_hash = "${data.archive_file.lambda_zip.output_base64sha256}"
@@ -61,21 +70,21 @@ resource "aws_lambda_function" "img_bot_lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "img_bot_lambda_event_rule" {
-    name = "img_bot_lambda_event"
-    description = "Fires every 4h"
-    schedule_expression = "rate(4 hours)"
+  name = "img_bot_lambda_event"
+  description = "Fires every 4h"
+  schedule_expression = "rate(4 hours)"
 }
 
 resource "aws_cloudwatch_event_target" "img_bot_lambda_event_target" {
-    rule = aws_cloudwatch_event_rule.img_bot_lambda_event_rule.name
-    target_id = "img_bot_lambda"
-    arn = aws_lambda_function.img_bot_lambda.arn
+  rule = aws_cloudwatch_event_rule.img_bot_lambda_event_rule.name
+  target_id = "img_bot_lambda"
+  arn = aws_lambda_function.img_bot_lambda.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_img_bot_lambda" {
-    statement_id = "AllowExecutionFromCloudWatch"
-    action = "lambda:InvokeFunction"
-    function_name = aws_lambda_function.img_bot_lambda.function_name
-    principal = "events.amazonaws.com"
-    source_arn = aws_cloudwatch_event_rule.img_bot_lambda_event_rule.arn
+  statement_id = "AllowExecutionFromCloudWatch"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.img_bot_lambda.function_name
+  principal = "events.amazonaws.com"
+  source_arn = aws_cloudwatch_event_rule.img_bot_lambda_event_rule.arn
 }
