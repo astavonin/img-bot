@@ -59,3 +59,23 @@ resource "aws_lambda_function" "img_bot_lambda" {
     }
   }
 }
+
+resource "aws_cloudwatch_event_rule" "img_bot_lambda_event_rule" {
+    name = "img_bot_lambda_event"
+    description = "Fires every 4h"
+    schedule_expression = "rate(4 hours)"
+}
+
+resource "aws_cloudwatch_event_target" "img_bot_lambda_event_target" {
+    rule = aws_cloudwatch_event_rule.img_bot_lambda_event_rule.name
+    target_id = "img_bot_lambda"
+    arn = aws_lambda_function.img_bot_lambda.arn
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_img_bot_lambda" {
+    statement_id = "AllowExecutionFromCloudWatch"
+    action = "lambda:InvokeFunction"
+    function_name = aws_lambda_function.img_bot_lambda.function_name
+    principal = "events.amazonaws.com"
+    source_arn = aws_cloudwatch_event_rule.img_bot_lambda_event_rule.arn
+}
