@@ -101,7 +101,7 @@ def response(status=200, headers=None, body=''):
 
 def lambda_handler(event, context):
     process()
-    return response(status=200, body=event['body'])
+    return response(status=200, body=event.get('body', ''))
 
 
 def main():
