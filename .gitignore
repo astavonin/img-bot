@@ -118,6 +118,7 @@ pip-selfcheck.json
 
 # project secret data
 session.dat
+src/config.json
 
 # temporary and project files
 .DS_Store

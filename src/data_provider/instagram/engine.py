@@ -42,6 +42,7 @@ def generate_signature(data):
 
 
 class InstagramEngine(Engine):
+
     def init(self) -> None:
         pass
 
@@ -56,6 +57,7 @@ class InstagramEngine(Engine):
         self._rank_token = None
         self._token = None
         self._cookies = None
+        self._own_name = None
 
     def save(self):
         return {
@@ -66,6 +68,7 @@ class InstagramEngine(Engine):
             "uuid": self._uuid,
             "phone_id": self._phone_id,
             "cookies": self._cookies,
+            "own_name": self._own_name
         }
 
     def restore(self, session):
@@ -82,6 +85,7 @@ class InstagramEngine(Engine):
         self._uuid = session["uuid"]
         self._phone_id = session["phone_id"]
         self._cookies = session["cookies"]
+        self._own_name = session["own_name"]
 
         self._session.cookies = cookiejar_from_dict(self._cookies)
         self._logged_in = True
@@ -93,6 +97,8 @@ class InstagramEngine(Engine):
             raise ValueError("username or/and password could not be empty")
 
         log.info("Instagram login requested for {}".format(username))
+
+        self._own_name = username
 
         m = hashlib.md5()
         m.update(username.encode('utf-8') + password.encode('utf-8'))
@@ -314,3 +320,6 @@ class InstagramEngine(Engine):
 
     def get_own_id(self):
         return self._user_id
+
+    def get_own_name(self):
+        return self._own_name

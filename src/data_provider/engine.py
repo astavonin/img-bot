@@ -75,3 +75,6 @@ class Engine(ABC):
 
     def get_own_id(self):
         raise NotImplementedError()
+
+    def get_own_name(self):
+        raise NotImplementedError()

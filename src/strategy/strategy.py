@@ -32,13 +32,16 @@ class Strategy(ABC):
         self._error_delay = 2 * 60
         if data_provider is not None:
             self._own_id = data_provider.get_own_id()
+            self._own_name = data_provider.get_own_name()
         else:
             self._own_id = -1
+            self._own_name = "(unknown)"
         self._debug = debug
 
     def init(self, data_provider: Engine) -> None:
         self._data_provider = data_provider
         self._own_id = data_provider.get_own_id()
+        self._own_name = data_provider.get_own_name()
 
     def set_media_filter(self, media_filter: Callable[[Media], bool]):
         self._media_filter = media_filter
