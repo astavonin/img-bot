@@ -6,7 +6,7 @@ data "external" "trigger" {
   program = [
     "${path.module}/dirhash.sh"]
 
-  query {
+  query = {
     directory = "${path.module}/../src"
   }
 }
