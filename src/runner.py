@@ -64,7 +64,7 @@ def process(uname: str, password: str, hashtags: str):
         media_like = MediaTask()
         media_source = HashtagMediaSource(load_list(hashtags))
         media_like.add_media_source(media_source)
-        liker = UserLiker(total_likes=10, debug=True)
+        liker = UserLiker(total_likes=200, debug=False)
         liker.set_user_filter(user_filter)
         media_like.add_strategy(liker)
         bot.add_task(media_like)
