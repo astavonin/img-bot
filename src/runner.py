@@ -75,6 +75,8 @@ def process(uname: str, password: str, hashtags: str):
 
         bot.run()
 
+        print(f"all tasks are successfully completed for {uname}")
+
     except RuntimeError as ex:
-        print("Error: {}".format(ex))
+        print(f"fatal error in {uname}: {ex}")
         traceback.print_tb(ex.__traceback__)

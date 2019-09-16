@@ -18,7 +18,7 @@ class UserLiker(Strategy):
                           self._likes_per_user)
 
     def __init__(self, likes_per_user=5, total_likes=100, data_provider: Engine = None,
-                  call_delay=1.0, debug=False) -> None:
+                  call_delay=0.5, debug=False) -> None:
         super().__init__(data_provider, call_delay, debug)
         self._likes_per_user = likes_per_user
         self._total_likes = total_likes
@@ -66,5 +66,5 @@ class UserLiker(Strategy):
                 sleep(error_delay)
                 error_delay *= 2
                 self._call_delay *= 2
-        log.info("{} user was liked by {}".format(int(self._total_likes / self._likes_per_user) - users_to_like,
+        print("{} user was liked by {}".format(int(self._total_likes / self._likes_per_user) - users_to_like,
                                                   self._own_name))

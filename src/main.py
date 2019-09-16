@@ -43,9 +43,6 @@ def lambda_handler(event, context):
 
 
 def main():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
     start_bot()
 
 
