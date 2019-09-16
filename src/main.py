@@ -1,5 +1,5 @@
 import json
-import os
+import logging
 import threading
 
 from runner import process
@@ -43,6 +43,9 @@ def lambda_handler(event, context):
 
 
 def main():
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
     start_bot()
 
 
